@@ -1,0 +1,61 @@
+/* Lucia Vacchiano
+ EC #1
+ Due Date: 11/13
+ Description: design and test a recursie function that returns the
+ number of 3s in an interger number passedyour function as an argument
+ */
+
+#include <iostream>
+#include <iomanip>
+
+unsigned int seed = 14;
+const int SIZE = 10;
+
+using namespace std;
+
+int find_int(int a[], int element);
+void initalize(int a[]);
+double random_gen(unsigned int &seed);
+void print_array(int a[]);
+
+int main()
+{
+    int a[SIZE], element = 0;
+
+    initalize(a);
+    print_array(a);
+    cout << "The number of 3's: " <<find_int(a, element) << endl;
+}
+
+double random_gen(unsigned int &seed)
+{
+    const int MODULUS = 15749;
+    const int MULTIPLIER = 69069;
+    const int INCREMENT = 1;
+    seed = ((MULTIPLIER * seed) + INCREMENT) % MODULUS;
+    return double(seed) / double(MODULUS);
+}
+
+void initalize(int a[])
+{
+    for(int i = 0; i < SIZE; i++)
+        a[i] = int(10 * random_gen(seed));
+}
+
+int find_int(int a[], int element){
+    int counter = 0;
+
+    if(element >= SIZE)
+        return 0;
+    else if (a[element] == 3)
+        return 1 + find_int(a, element + 1);
+    else
+        return find_int(a,element + 1);
+}
+
+void print_array(int a[])
+{
+    for(int i = 0; i < SIZE; i++)
+        cout << a[i] << setw(4) ;
+    cout << endl;
+}
