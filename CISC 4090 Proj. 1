@@ -1,0 +1,101 @@
+/*
+ * CISC 4090 (Theory Of Computation)
+ * Spring, 2019
+ *
+ * Project 1: A Deterministic Finite-State Automaton
+ *
+ * Implementation file for FSA class
+ * Inputs values from data file for FSA and traces the machine
+ * using the function find() and trace() to make sure user inputted strings are valid or not
+ *
+ * Author: Lucia Vacchiano
+ * Date:   4 Feb 2019
+ */
+
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <vector>
+#include "FSA.h"
+using namespace std;
+
+//Constructor that takes values from a data file as parameters and
+//assigns them to variables of FSAs.
+
+FSA :: FSA(std :: ifstream &ifs)
+{
+    string sigmaTemp;                                // temporary variable to load variables into sigma
+    int acceptNum;
+    int acceptState;
+    int state;
+    while (!ifs.eof()) {
+        ifs >> sigmaTemp;
+        sigma.push_back(sigmaTemp.at(0));
+        sigma.push_back(sigmaTemp.at(1));
+        
+        ifs >> num_states;
+        ifs >> start_state;
+        ifs >> acceptNum;
+        
+        for (int i = 0; i < acceptNum; i++){
+            ifs >> acceptState;
+            accept_states.push_back(acceptState);
+        }
+        
+        for (int i = 0; i < (num_states); i++){
+            std::vector<int> temp;
+            for (int j = 0; j < 2; j++){
+                ifs >> state;
+                temp.push_back(state);
+            }
+            state_table.push_back(temp);
+        }
+    }
+}
+
+//Takes a string as parameter and uses find to determine if the string is valid or not using the
+//state_table to trace the states. So given, "valid string" or "invalid string"
+//is outputed based on the result both for loops that trace the steps.
+
+void FSA :: trace(const std::string& in_string)
+{
+    int len = in_string.length();
+    int statelen = accept_states.size();
+    int col, row;
+    int state = start_state;
+    bool valid = false;                             //flag to mark if string is valid or not
+    
+    cout << "State trace: ";
+    for(int i = 0; i < len; i++){
+        col = find(sigma, in_string.at(i));
+        row = state;
+        state = state_table[row-1][col];
+        cout << row << " ";
+    }
+    
+    for(int i = 0; i < statelen; i++){
+        if(state == accept_states[i])
+            valid = true;
+    }
+    
+    if(valid)
+        cout << "... accepted" << endl;
+    else
+        cout << "... not accepted" << endl;
+}
+
+//Given a vector and string variable x, returns 0 if x is a, 1 if x is b, and if not a or b
+//(which means not in alphabet sigma of FSA) -1 is returned.
+
+template <typename T> int FSA :: find(const std::vector<T> v, const T x)
+{
+    if (x == v[0])
+        return 0;
+    else if (x == v[1])
+        return 1;
+    else{
+        return -1;
+        cout << "Input Not Accepted!" << endl;
+    }
+}
+
