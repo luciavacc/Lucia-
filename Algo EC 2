@@ -1,0 +1,75 @@
+/*Lucia Vacchiano
+ EC 2
+ Description: write a program that produces sum pairs from a vector of random numbers
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
+
+const int SIZE = 10; //size of vector
+unsigned int seed = 5; //for random generator
+
+
+double random_gen(unsigned int &seed);    //creates random numbers for vector
+void print_pairs(vector <int> &v, int target); //produces sum pairs from vector
+
+int main ()
+{
+    vector <int> v(SIZE);  //vector v of constant SIZE defined above
+    int target = 9;  //number to find
+
+   for(int i = 0; i < v.size(); i++)  //loop to fill vector with random numbers
+        v[i] = int(9 * random_gen(seed));
+
+    cout << "Vector: " << endl;  //print orginal vector
+    for(int i = 0; i < v.size(); ++i)
+        cout << setw(4) << v[i];
+    cout << endl;
+
+    sort(v.begin(), v.end());  //sort the array of random numbers
+
+    print_pairs(v, target);  //function to find and print sum pairs
+}
+
+void print_pairs(vector <int> &v, int target)
+{
+    int first = 0;  //first number in vector
+    int last = v.size() - 1;  //last number in vector
+
+    cout << "Print Pairs: " <<endl;
+    while(first < last)  // loop will run while first is less than last
+    {
+        if(v[first] + v[last] == target)  //if first and last number are equal to target then print the pairs
+        {                                   // and move "pointers" by 1
+            cout << v[first] << "--" << v[last] << endl;
+            first++;
+            last--;
+        }
+        else if(v[first] + v[last] > target)  //if greater than the target then only move last "pointer" and repeat
+            last--;
+        else  //if less than then increase first "pointer" and repeat
+            first++;
+    }
+}
+
+double random_gen(unsigned int &seed)   //random number generator
+{
+    const int MODULUS = 15749;
+    const int MULTIPLIER = 69069;
+    const int INCREMENT = 1;
+    seed = ((MULTIPLIER * seed) + INCREMENT) % MODULUS;
+    return double(seed) / double(MODULUS);
+}
+
+
+/*Sample Run:
+
+Vector: 
+   8   4   6   1   6   4   7   4   3   2
+Print Pairs: 
+1--8
+2--7
+3--6*/
