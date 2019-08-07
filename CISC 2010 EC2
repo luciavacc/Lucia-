@@ -1,0 +1,116 @@
+/* Lucia Vacchiano
+ EC 2
+ Due Date: 11/20
+ Description: program that replaces connecting 1's in a matrix with numbers
+ */
+
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <cstdlib>
+#include <algorithm>
+
+const int SIZE = 6;
+unsigned int seed = 7;
+
+using namespace std;
+
+void fill_array(int a[][SIZE]);
+void print_array(int a[][SIZE]);
+double random_gen(unsigned int &seed);
+void num_set(int a[][SIZE], int row, int col, int counter);
+inline bool left(int a[][SIZE], int row, int col);
+inline bool right(int a[][SIZE], int row, int col);
+inline bool top(int a[][SIZE], int row, int col);
+inline bool bottom(int a[][SIZE], int row, int col);
+
+int main()
+{
+    int a[SIZE][SIZE], counter = 1;
+    fill_array(a);
+
+    cout << "Orginal matrix: " << endl;
+    print_array(a);
+
+    for(int row = 0; row < SIZE; row++)
+        for(int col = 0; col < SIZE; col++)
+        {
+            if(a[row][col] == 1)
+            {
+                cout << "Before finding set " << counter + 1 << endl;
+                print_array(a);
+                cout << endl;
+
+                counter++;
+                num_set(a, row, col, counter);
+
+                cout << "After finding set " << counter << endl;
+                print_array(a);
+                cout << endl;
+            }
+        }
+}
+
+double random_gen(unsigned int &seed)
+{
+    const int MODULUS = 15749;
+    const int MULTIPLIER = 69069;
+    const int INCREMENT = 1;
+    seed = ((MULTIPLIER * seed) + INCREMENT) % MODULUS;
+    return double(seed) / double(MODULUS);
+}
+
+void fill_array(int a[][SIZE])
+{
+    for(int row = 0; row < SIZE; row++)
+        for(int col = 0; col < SIZE; col++)
+            a[row][col]= int(2 * random_gen(seed));
+}
+
+void print_array(int a[][SIZE])
+{
+    for(int row = 0; row < SIZE; row++)
+    {
+        for(int col = 0; col < SIZE; col++)
+            cout << setw(3) << a[row][col];
+        cout << endl;
+    }
+}
+
+inline bool left(int a[][SIZE], int row, int col)
+{
+    return a[row][col-1] == 1;
+}
+
+inline bool right(int a[][SIZE], int row, int col)
+{
+    return a[row][col+1] == 1;
+}
+
+inline bool top(int a[][SIZE], int row, int col)
+{
+    return a[row+1][col] == 1;
+}
+
+inline bool bottom(int a[][SIZE], int row, int col)
+{
+    return a[row-1][col] == 1;
+}
+
+void num_set(int a[][SIZE], int row, int col, int counter)
+{
+    if(a[row][col] == 1)
+    {
+        a[row][col] = counter;
+
+        if((right(a, row, col)))
+            num_set(a, row, col + 1, counter);
+        if((left(a, row, col)))
+            num_set(a, row, col - 1, counter);
+        if((top(a, row, col)))
+            num_set(a, row + 1, col, counter);
+        if((bottom(a, row, col)))
+            num_set(a, row - 1, col, counter);
+    }
+}
+
