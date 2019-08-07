@@ -1,0 +1,364 @@
+create table Card(
+    -> cardNum int,
+    -> cardHolder char(20),
+    -> expDate date,
+    -> billingAddress char(30),
+    -> phoneNum int,
+    -> primary key (cardNum));
+Query OK, 0 rows affected (0.14 sec)
+
+MariaDB [lvacchiano]> create table BankAccount(
+    -> accNum char(30),
+    -> bank char(20),
+    -> accHolder char(20),
+    -> accType char(10),
+    -> primary key (accNum));
+Query OK, 0 rows affected (0.32 sec)
+
+MariaDB [lvacchiano]> create table PayMethod(    
+    -> preferred char(20),
+    -> cardNum int,
+    -> accNum char(30),
+    -> customerID char(10),
+    -> foreign key (cardNum) references Card(cardNum),
+    -> foreign key (accNum) references BankAccount(accNum),
+    -> foreign key (customerID) references Customer(customerID));
+Query OK, 0 rows affected (0.13 sec)
+
+MariaDB [lvacchiano]> create table Books1(
+    -> price real,
+    -> edition char(10),
+    -> ISBN char(20),
+    -> year date,
+    -> title char(50),
+    -> publisher char(30),
+	-> inventory char(10),
+    -> primary key (ISBN));
+Query OK, 0 rows affected (0.21 sec)
+
+MariaDB [lvacchiano]> create table Aut(
+    -> fullName char(30),
+    -> ISBN char(20),
+    -> primary key(fullName),
+    -> foreign key(ISBN) references Books1(ISBN));
+Query OK, 0 rows affected (0.20 sec)
+
+MariaDB [lvacchiano]> create table Sec(
+    -> sectionID char(10),
+    -> ISBN char(20),
+    -> foreign key (ISBN) references Books1(ISBN));
+Query OK, 0 rows affected (0.15 sec)
+
+MariaDB [lvacchiano]> create table ShoppingBasket(
+    -> billTotal real,
+    -> quantity int,
+    -> ISBN char(20),
+    -> customerID char(10),
+    -> foreign key(ISBN) references Books1(ISBN),
+	-> foreign key (customerID) references Customer(customerID));
+Query OK, 0 rows affected (0.19 sec)
+
+
+MariaDB [lvacchiano]> create table Customer(
+    -> customerID char(10),
+    -> username char(20),
+    -> password char(10),
+    -> email char(20),
+    -> phoneNum int,
+    -> address char(30),
+    -> dob date,
+    -> gender char(10),
+    -> fname char(30),
+    -> primary key (customerID));
+Query OK, 0 rows affected (0.17 sec)
+
+MariaDB [lvacchiano]> insert into Books1(price, edition, ISBN, year, title, publisher, inventory)
+    -> values(100.00, "3rd ed", "0-8053-1755-4", "2000-00-00", "Fundamentals of Database Sytems", "Addison Wesley", "20");
+    -> (120.00, "3rd ed", "978-0-12-374856-0", "2011-00-00", "Data Mining, Pratical Mach.", "Elseviery", "25");                           
+    -> (30.00, "", "0-1153-2555-5", "2010-00-00", "Writing Skills", "Addison Wesley", "10");
+    -> (15.00, "3rd ed", "978-0-07-246563-1", "2003-00-00", "Database Management Systems", "McGraw-Hill", "15");
+Query OK, 1 row affected (0.03 sec)
+
+MariaDB [lvacchiano]> select * from Books1;
++-------+---------+-------------------+------------+---------------------------------+----------------+-----------+
+| price | edition | ISBN              | year       | title                           | publisher      | inventory |
++-------+---------+-------------------+------------+---------------------------------+----------------+-----------+
+|    30 |         | 0-1153-2555-5     | 2010-00-00 | Writing Skills                  | Addison Wesley | 10        |
+|   100 | 3rd ed  | 0-8053-1755-4     | 2000-00-00 | Fundamentals of Database Sytems | Addison Wesley | 20        |
+|    15 | 3rd ed  | 978-0-07-246563-1 | 2003-00-00 | Database Management Systems     | McGraw-Hill    | 15        |
+|   120 | 3rd ed  | 978-0-12-374856-0 | 2011-00-00 | Data Mining, Pratical Mach.     | Elseviery      | 25        |
++-------+---------+-------------------+------------+---------------------------------+----------------+-----------+
+
+
+MariaDB [lvacchiano]> insert into Aut(fullName, ISBN)
+    ->  values("Ramez A. Elmasri","0-8053-1755-4"),
+    -> ("Shamkant Navathe","0-8053-1755-4"),
+    -> ("Ian H. Witten", "978-0-12-374856-0"),
+    -> ("Eibe Frank", "978-0-12-374856-0"),
+    -> ("Mark Hall", "978-0-12-374856-0"),
+    -> ("Matt Florence", "0-1153-2555-5");
+    -> ("Raghu Ramakrishnan" ,"978-0-07-246563-1"),
+    -> ("Johannes Gehrke", "978-0-07-246563-1");
+Query OK, 8 rows affected (0.03 sec)
+
+
+MariaDB [lvacchiano]> select * from Aut;
++--------------------+-------------------+
+| fullName           | ISBN              |
++--------------------+-------------------+
+| Matt Florence      | 0-1153-2555-5     |
+| Ramez A. Elmasri   | 0-8053-1755-4     |
+| Shamkant Navathe   | 0-8053-1755-4     |
+| Johannes Gehrke    | 978-0-07-246563-1 |
+| Raghu Ramakrishnan | 978-0-07-246563-1 |
+| Eibe Frank         | 978-0-12-374856-0 |
+| Ian H. Witten      | 978-0-12-374856-0 |
+| Mark Hall          | 978-0-12-374856-0 |
++--------------------+-------------------+
+
+MariaDB [lvacchiano]> insert into Sec(sectionID, ISBN)
+    -> values("Science", "0-8053-1755-4"),
+    -> ("Science", "978-0-12-374856-0"),
+    -> ("Arts", "0-1153-2555-5"),
+    -> ("Science","978-0-07-246563-1");
+Query OK, 4 rows affected (0.03 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+MariaDB [lvacchiano]> select * from Sec;
++-----------+-------------------+
+| sectionID | ISBN              |
++-----------+-------------------+
+| Science   | 0-8053-1755-4     |
+| Science   | 978-0-12-374856-0 |
+| Arts      | 0-1153-2555-5     |
+| Science   | 978-0-07-246563-1 |
++-----------+-------------------+
+4 rows in set (0.00 sec)
+
+insert into Card(cardNum, cardHolder, expDate, billingAddress, phoneNum)
+    -> values(9999,"Tom Hunks","2017-08-00", "1100GrandRoad,NewYork,NY10001", 2124000001),
+    -> (2222,"Tom Cruise","2012-00-14", "441EastFordhamRoad,Bronx,NY", 188173333),
+	->(1234, "Tina Fei","2010-00-18","442FordhamRoad,Bronx,NY1048" ,177180001),
+	->(1122, "Rice Brown","2001-00-16","38 56th Street, New York, NY",1200017788),
+	->(1111, "Lisa Warren", "2001-00-17","1FordhamRoad,Bronx,NY10458", 2123001199);
+Query OK, 1 row affected (0.05 sec)
+
+MariaDB [lvacchiano]> select * from Card;
++---------+-------------+------------+-------------------------------+------------+
+| cardNum | cardHolder  | expDate    | billingAddress                | phoneNum   |
++---------+-------------+------------+-------------------------------+------------+
+|    1111 | Lisa Warren | 2001-00-17 | 1FordhamRoad,Bronx,NY10458    | 2123001199 |
+|    1122 | Rice Brown  | 2001-00-16 | 38 56th Street, New York, NY  | 1200017788 |
+|    1234 | Tina Fei    | 2010-00-18 | 442FordhamRoad,Bronx,NY1048   |  177180001 |
+|    2222 | Tom Cruise  | 2012-00-14 | 441EastFordhamRoad,Bronx,NY   |  188173333 |
+|    9999 | Tom Hunks   | 2017-08-00 | 1100GrandRoad,NewYork,NY10001 | 2124000001 |
++---------+-------------+------------+-------------------------------+------------+
+5 rows in set (0.01 sec)
+
+MariaDB [lvacchiano]> insert into BankAccount(accNum, bank, accHolder, accType)
+    -> values("1112223", "Chase", "Tom Hunks", "Checking");
+    -> ("12667", "Capital One", "Tom Fei", "Checking"),
+    -> ("9922882", "Chase", "Lisa Warren","Checking");
+Query OK, 3 rows affected (0.05 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [lvacchiano]> select * from BankAccount;
++---------+-------------+-------------+----------+
+| accNum  | bank        | accHolder   | accType  |
++---------+-------------+-------------+----------+
+| 1112223 | Chase       | Tom Hunks   | Checking |
+| 12667   | Capital One | Tom Fei     | Checking |
+| 9922882 | Chase       | Lisa Warren | Checking |
++---------+-------------+-------------+----------+
+3 rows in set (0.00 sec)
+
+MariaDB [lvacchiano]> insert into Customer(customerID, username, password, email, phoneNum, address, dob, gender, fname)
+    -> values("00001", "xxyy","0808","thunks@yahoo.com", 2124000001, "1100 Grand Road, New York, NY","1990-12-01", "M","Tom Hunks”),
+	->("00002", "xzzz","11223","tcruise@yahoo.com", 188173333, "441 East Fordham Road, Bronx","1991-10-01", "M","Tom Cruise”),
+	->("00003", "abcde","xyz123","tfei11@yahoo.com", 177180001, "442 Fordham Road, Bronx, NY","1956-12-01", "F","Tina Fei")
+	->values("00004", "iama","34ii","rbrown1999@hotmail", 120001778, "383 56th Street, New York, NY","1970-12-01", "F","Rice Brown”),
+	->("00005", "lisaw","8877","lisawarren@gmail.com", 123001199, "1 Fordham Road, Bronx, NY","1972-12-01", "F","Lisa Warren”);
+MariaDB [lvacchiano]> select * from Customer;
+
++------------+----------+----------+----------------------+------------+-------------------------------+------------+--------+-------------+
+| customerID | username | password | email                | phoneNum   | address                       | dob        | gender | fname       |
++------------+----------+----------+----------------------+------------+-------------------------------+------------+--------+-------------+
+| 00001      | xxyy     | 0808     | thunks@yahoo.com     | 2124000001 | 1100 Grand Road, New York, NY | 1990-12-01 | M      | Tom Hunks   |
+| 00002      | xzzz     | 11223    | tcruise@yahoo.com    |  188173333 | 441 East Fordham Road, Bronx  | 1991-10-01 | M      | Tom Cruise  |
+| 00003      | abcde    | xyz123   | tfei11@yahoo.com     |  177180001 | 442 Fordham Road, Bronx, NY   | 1956-12-01 | F      | Tina Fei    |
+| 00004      | iama     | 34ii     | rbrown1999@hotmail   |  120001778 | 383 56th Street, New York, NY | 1970-12-01 | F      | Rice Brown  |
+| 00005      | lisaw    | 8877     | lisawarren@gmail.com |  123001199 | 1 Fordham Road, Bronx, NY     | 1972-12-01 | F      | Lisa Warren |
++------------+----------+----------+----------------------+------------+-------------------------------+------------+--------+-------------+
+5 rows in set (0.00 sec)
+
+MariaDB [lvacchiano]> insert into PayMethod(preferred, cardNum, accNum, customerID)
+    -> values("Checking",9999,"1112223","00001");
+Query OK, 1 row affected (0.24 sec)
+
+MariaDB [lvacchiano]> insert into PayMethod(preferred, cardNum, customerID)
+    -> values("CCard",2222,"00002");
+Query OK, 1 row affected (0.03 sec)
+
+MariaDB [lvacchiano]> insert into PayMethod(preferred, cardNum, accNum, customerID)
+    -> values("DCard",1234,"12667","00003");
+Query OK, 1 row affected (0.05 sec)
+
+MariaDB [lvacchiano]> insert into PayMethod(preferred, cardNum, customerID)
+    -> values ("CCrard",1122,"00004");
+Query OK, 1 row affected (0.03 sec)
+
+MariaDB [lvacchiano]> insert into PayMethod(cardNum, accNum, customerID)
+    -> values(1111, "9922882","00005");
+Query OK, 1 row affected (0.02 sec)
+
+MariaDB [lvacchiano]> select * from PayMethod; 
++-----------+---------+---------+------------+
+| preferred | cardNum | accNum  | customerID |
++-----------+---------+---------+------------+
+| Checking  |    9999 | 1112223 | 00001      |
+| CCard     |    2222 | NULL    | 00002      |
+| DCard     |    1234 | 12667   | 00003      |
+| CCard     |    1122 | NULL    | 00004      |
+| NULL      |    1111 | 9922882 | 00005      |
++-----------+---------+---------+------------+
+5 rows in set (0.00 sec)
+
+
+MariaDB [lvacchiano]> insert into ShoppingBasket(billTotal, quantity, ISBN, customerID)
+    -> values(120, 1,"978-0-12-374856-0", "00001”),
+    -> (220, 2,"978-0-07-246563-1","00001"),
+    -> (30.00, 1 ,"0-1153-2555-5", "00001");
+Query OK, 2 rows affected (0.04 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [lvacchiano]> insert into ShoppingBasket(billTotal, quantity, ISBN, customerID)
+    -> values(120, 1,"978-0-12-374856-0", "00002"),
+    -> (110, 1,"978-0-07-246563-1","00002"),
+    -> (30.00, 1 ,"0-1153-2555-5", "00002");
+Query OK, 3 rows affected (0.04 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [lvacchiano]> insert into ShoppingBasket(billTotal, quantity, ISBN, customerID)
+    -> values(120, 1,"978-0-12-374856-0", "00003"),
+    -> (110, 1,"978-0-07-246563-1","00003"),
+    -> (30.00, 1 ,"0-1153-2555-5", "00003"),
+    -> (100, 1, "0-8053-1755-4 ","00003");
+Query OK, 4 rows affected (0.05 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+MariaDB [lvacchiano]> insert into ShoppingBasket(billTotal, quantity, ISBN, customerID)
+    -> values(120, 1,"978-0-12-374856-0", "00004"),
+    -> (110, 1,"978-0-07-246563-1","00004"),
+    -> (60.00, 2 ,"0-1153-2555-5", "00004"),
+    -> (100, 1, "0-8053-1755-4 ","00004");
+Query OK, 4 rows affected (0.05 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [lvacchiano]> select * from ShoppingBasket;
++-----------+----------+-------------------+------------+
+| billTotal | quantity | ISBN              | customerID |
++-----------+----------+-------------------+------------+
+|       120 |        1 | 978-0-12-374856-0 | 00001      |
+|       220 |        2 | 978-0-07-246563-1 | 00001      |
+|        30 |        1 | 0-1153-2555-5     | 00001      |
+|       120 |        1 | 978-0-12-374856-0 | 00002      |
+|       110 |        1 | 978-0-07-246563-1 | 00002      |
+|        30 |        1 | 0-1153-2555-5     | 00002      |
+|       120 |        1 | 978-0-12-374856-0 | 00003      |
+|       110 |        1 | 978-0-07-246563-1 | 00003      |
+|        30 |        1 | 0-1153-2555-5     | 00003      |
+|       100 |        1 | 0-8053-1755-4     | 00003      |
+|       120 |        1 | 978-0-12-374856-0 | 00004      |
+|       110 |        1 | 978-0-07-246563-1 | 00004      |
+|        60 |        2 | 0-1153-2555-5     | 00004      |
+|       100 |        1 | 0-8053-1755-4     | 00004      |
++-----------+----------+-------------------+------------+
+14 rows in set (0.00 sec)
+
+
+MariaDB [lvacchiano]> select C.fname from Customer C where C.customerID not in (select S.customerID from ShoppingBasket S where S.customerID= C.customerID);
++-------------+
+| fname       |
++-------------+
+| Lisa Warren |
++-------------+
+1 row in set (0.00 sec)
+
+MariaDB [lvacchiano]> select C.fname from Customer C, ShoppingBasket S where S.ISBN = "0-1153-2555-5" and S.customerID = C.customerID;
++------------+
+| fname      |
++------------+
+| Tom Hunks  |
+| Tom Cruise |
+| Tina Fei   |
+| Rice Brown |
++------------+
+4 rows in set (0.00 sec)
+
+MariaDB [lvacchiano]> select C.fname from Customer C where C.customerID not in(select S. customerID from ShoppingBasket S1, ShoppingBasket S2, ShoppingBasket S where S1.customerID = C.customerID and S2.customerID = C.customerID and S2.ISBN <> S1.ISBN);      
++------------+
+| fname      |
++------------+
+| Tom Hunks  |
+| Tom Cruise |
+| Tina Fei   |
+| Rice Brown |
++------------+
+4 rows in set (0.00 sec)
+
+MariaDB [lvacchiano]> select B.title,sum(S.quantity) as copies from Books1 B, ShoppingBasket S where S.ISBN= B.ISBN group by B.title;
++---------------------------------+--------+
+| title                           | copies |
++---------------------------------+--------+
+| Data Mining, Pratical Mach.     | 4      |
+| Database Management Systems     | 5      |
+| Fundamentals of Database Sytems | 2      |
+| Writing Skills                  | 5      |
++---------------------------------+--------+
+4 rows in set (0.00 sec)
+
+MariaDB [lvacchiano]> select B.title,sum(S.quantity) as copies from Customer C, Books1 B, ShoppingBasket S where S.ISBN= B.ISBN and S.customerID = C.customerID and C.gender = "F" group by B.title;
++---------------------------------+--------+
+| title                           | copies |
++---------------------------------+--------+
+| Data Mining, Pratical Mach.     | 2      |
+| Database Management Systems     | 2      |
+| Fundamentals of Database Sytems | 2      |
+| Writing Skills                  | 3      |
++---------------------------------+--------+
+4 rows in set (0.01 sec)
+
+
+MariaDB [lvacchiano]> select count(distinct C.fname) from PayMethod P, Customer C where C.customerID= P.customerID and P.preferred ="CCard";
++-------------------------+
+| count(distinct C.fname) |
++-------------------------+
+|                       2 |
++-------------------------+
+1 row in set (0.00 sec)
+
+
+MariaDB [lvacchiano]> select C.address, Sum(C.address like "%Bronx%") from Customer C group by C.address;
++-------------------------------+-------------------------------+
+| address                       | Sum(C.address like "%Bronx%") |
++-------------------------------+-------------------------------+
+| 1 Fordham Road, Bronx, NY     | 1                             |
+| 1100 Grand Road, New York, NY | 0                             |
+| 383 56th Street, New York, NY | 0                             |
+| 441 East Fordham Road, Bronx  | 1                             |
+| 442 Fordham Road, Bronx, NY   | 1                             |
++-------------------------------+-------------------------------+
+5 rows in set (0.00 sec)
+
+MariaDB [lvacchiano]> select C.fname, sum(S.billTotal) as Total from Customer C, ShoppingBasket S where C.customerID = S.customerID group by C.fname;
++------------+-------+
+| fname      | Total |
++------------+-------+
+| Rice Brown |   390 |
+| Tina Fei   |   360 |
+| Tom Cruise |   260 |
+| Tom Hunks  |   370 |
++------------+-------+
+4 rows in set (0.00 sec)
